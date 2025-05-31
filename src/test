@@ -1,0 +1,11 @@
+const test = {
+  ingredients: [
+    { name: "brambory", count: "4" },
+    { name: "brambory", count: "4" },
+    { name: "brambory", count: "4" },
+    { name: "brambory", count: "4" },
+    { name: "brambory", count: "4" },
+  ],
+  cookTime: '30 min',
+  isCold: false,
+}
