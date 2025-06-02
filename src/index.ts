@@ -17,7 +17,7 @@ app.get('/api/getrecipe', async (c) => {
 async function fce() {
   const response = await ai.models.generateContent({
     model: 'gemini-2.0-flash-001',
-    contents: 'Napiš mi prosím recept podle těchto údajů:' + "Pouze z těchto ingrediencí:" + ingredience + "Maximálně o této délce vaření:" + test.cookTime + "Má být pokrm studený:" + test.isCold,
+    contents: 'Napiš mi prosím recept podle těchto údajů:' + "Pouze z těchto ingrediencí:" + ingredience + "Maximálně o této délce vaření:" + test.cookTime + "Přesně má-li pokrm být studený:" + test.isCold,
   });
   //console.log(response.text);
 
@@ -37,11 +37,11 @@ interface ingredient {
 
 const test = {
   ingredients: [
-    { name: "brambory", count: "4" },
-    { name: "brambory", count: "4" },
-    { name: "brambory", count: "4" },
-    { name: "brambory", count: "4" },
-    { name: "brambory", count: "4" },
+    { name: "brambory", count: "4 kg" },
+    { name: "hovězí maso", count: "1 kg" },
+    { name: "česnek", count: "1" },
+    { name: "olej", count: "1 l" },
+    { name: "sůl", count: "200 g" },
   ],
   cookTime: '30 min',
   isCold: false,
