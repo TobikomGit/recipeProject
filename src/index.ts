@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { serveStatic } from "hono/bun"
 import { GoogleGenAI } from '@google/genai';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
@@ -6,7 +7,9 @@ const ai = new GoogleGenAI({ apiKey: "AIzaSyD9maWTSpB87rv5KMdkVdJSlPnpYfUUqLU" }
 const app = new Hono()
 
 
-app.get('/', (c) => { return c.text('Hello Hono!') })
+app.use('/', serveStatic({
+  path: "./index.html"
+}))
 app.get('/api/getrecipe', async (c) => {
   const text = await fce()
 
@@ -19,7 +22,7 @@ async function fce() {
     model: 'gemini-2.0-flash-001',
     contents: 'Napiš mi prosím recept podle těchto údajů:' + "Pouze z těchto ingrediencí:" + ingredience + "Maximálně o této délce vaření:" + test.cookTime + "Přesně má-li pokrm být studený:" + test.isCold,
   });
-  //console.log(response.text);
+  
 
   return response.text
 }
