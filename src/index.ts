@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { serveStatic } from "hono/bun"
 import { GoogleGenAI } from '@google/genai';
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+import { html } from 'hono/html';
 
 const ai = new GoogleGenAI({ apiKey: "AIzaSyD9maWTSpB87rv5KMdkVdJSlPnpYfUUqLU" });
 const app = new Hono()
@@ -10,17 +10,37 @@ const app = new Hono()
 app.use('/', serveStatic({
   path: "./index.html"
 }))
-app.get('/api/getrecipe', async (c) => {
-  const text = await fce()
+app.post('/api/getrecipe', async (c) => {
+  const dataJson = await c.req.json()
+  const text = await responseAI(dataJson)
 
-  return c.text(text ?? ``)
+  console.log(text)
+  if(text){
+    return c.json({recipe: text})
+  }
+  else{
+    return c.json({})
+  }
 })
+app.use()
 
 
-async function fce() {
+async function responseAI(data: cookData) {
   const response = await ai.models.generateContent({
-    model: 'gemini-2.0-flash-001',
-    contents: 'Napiš mi prosím recept podle těchto údajů:' + "Pouze z těchto ingrediencí:" + ingredience + "Maximálně o této délce vaření:" + test.cookTime + "Přesně má-li pokrm být studený:" + test.isCold,
+    model: 'gemini-2.0-flash-001', 
+    contents: `Napiš mi prosím recept podle těchto údajů:
+
+        Pouze z těchto ingrediencí: ${data.ingredients} 
+
+        Maximálně o této délce vaření: ${data.cookTime} 
+
+        Přesně má-li pokrm být studený: ${data.isCold}
+        
+        Přesně má-li pokrm být bez lepku: ${data.glutenFree}
+        
+        Přesně má-li pokrm být veganský: ${data.vegan}
+        
+        Přesně má-li pokrm být vegetarianský: ${data.vegetarian}`,
   });
   
 
@@ -28,17 +48,15 @@ async function fce() {
 }
 
 interface cookData {
-  ingredients: ingredient[],
+  ingredients: String,
   cookTime: String,
-  isCold: Boolean,
+  isCold: String,
+  glutenFree: Boolean,
+  vegan: Boolean,
+  vegetarian: Boolean
 }
 
-interface ingredient {
-  name: String,
-  count: String,
-}
-
-const test = {
+/*const test = {
   ingredients: [
     { name: "brambory", count: "4 kg" },
     { name: "hovězí maso", count: "1 kg" },
@@ -48,15 +66,15 @@ const test = {
   ],
   cookTime: '30 min',
   isCold: false,
-}
+}*/
 
-const ingredience: string | string[] = []
+/*const ingredience: string | string[] = []
 for (let x of test.ingredients) {
   ingredience.push(x.name + ", " + x.count)
 }
 console.log(ingredience)
 console.log(test.cookTime)
-console.log(test.isCold)
+console.log(test.isCold)*/
 
 
 export default app
